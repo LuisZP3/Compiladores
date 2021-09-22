@@ -14,28 +14,47 @@
   <p id="mensajes"></p>
 
   <script>
-    function abrirArchivo(evento) {
-      let archivo = evento.target.files[0];
+    function abrirArchivo(evento) { //Función que abre el archibo luego de que termine la carga.
+      let archivo = evento.target.files[0]; // se selecciona el archivo de la lista de archivos
 
-      if(archivo){
+      if(archivo){    //Si el archivo existe
+
+        /* DECLARACION DE VARIABLES */
         let reader = new FileReader();
         let c = "";
         var b=0;
         var x=0;
-        reader.readAsText(archivo);
 
-        reader.onload = function(e) {
-          let contenido = e.target.result;
+        reader.readAsText(archivo); //Se lee el archivo como texto
+
+        reader.onload = function(e) { // Se inicia la función se haya completado de leer el archivo
+          let contenido = e.target.result;  //Se declara una cadena con el contenido del archivo
+
+          /* INICIO DEL RECORRIDO DE LA CADENA */
           for (var i = 0; i < contenido.length; i++){
+            /* DECLARACIÓN DE VARIABLES */
             b=contenido.toUpperCase().charCodeAt(i);
             x=contenido.toUpperCase().charCodeAt(i+1);
             
-            if(b==47 && x==47){
+            /* INICIO DE VALIDACIONES DE LAS PALABRAS */
+            if(b==x){ 
+              if(b==38 || (b>41 && b<46) || (b>57 && b<63)){ //Si la palabra es un signo repetido
+                xx=contenido.toUpperCase().charCodeAt(i+2);
+                if(xx==b){
+                  c+="===";
+                  i+=3;
+                }else{
+                  c+=contenido[i]+contenido[i]+"\n";
+                  i+=2;
+                }
+              }
+            }
+            if(b==47 && x==47){ //Validacion para comentarios //
                 while(b!=10){
                   i++;
                   b=contenido.toUpperCase().charCodeAt(i);
                 }
-            }else if(b==47 && x==42){
+            }else if(b==47 && x==42){ //Validacion para comentarios de multiples lineas
                 while(b!=42 || x!=47){
                   i++;
                   b=contenido.toUpperCase().charCodeAt(i);
@@ -43,32 +62,34 @@
                 }
                 i++;
             }
-            else if(b>64 && b<91){
+            else if(b>64 && b<91){ //Validacion si es una palabra con letras
               c+=contenido[i];
               if(x<65 || x>90){
                 c+="\n";
               }
             }
-            else if(b==10 || b==9)
+            else if(b==10 || b==9) //Validacion para saltos de linea y Tabulacion
               c+="";
-            else if((b>32 && b<65) || (b>90))
+            else if((b>32 && b<65) || (b>90)) //Validacion para las palabras diferentes a letras
               c+=contenido[i]+"\n";
-            else if(b==32){
-              if(x==32){
+            else if(b==32){ //Validacion para espacios en blanco
+              if(x==32){ //Validacion para multiples espacios en blanco
                 x=0;
                 continue;
               }
               c+="";
             }
+            /* FIN VALIDACIONES PALABRAS */
            }
-          document.getElementById('par').innerText = c;
+           /* FIN DEL RECORRIDO DE LA CADENA */
+          document.getElementById('par').innerText = c; //Insertando la cadena generada al parrafo
         };
-
       }else{
-        document.getElementById('mensajes').innerText = 'No se ha seleccionado un archivo';
+        document.getElementById('mensajes').innerText = 'No se ha seleccionado un archivo'; //Si el archivo no existe
       }
     }
 
+    //Evento que se activa al cargar el archivo y activa la funcion de abrirArchivo
     window.addEventListener('load', () => {
       document.getElementById('archivoTxt').addEventListener('change',abrirArchivo);
     });
